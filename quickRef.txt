@@ -1,0 +1,5 @@
+f <- run_model('RevLearn_RLbeta_alt4_c_w_v25_1lr')
+
+fit_RLbeta_alt4_c_w_v25 <- run_model('RevLearn_RLbeta_alt4_c_w_v25_1lr', F, fitObj = f$fit)
+
+saveRDS(fit_,file ="_outputs/fit_RLbeta_alt4_c_w_v25.RData",compress=F)
