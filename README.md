@@ -67,7 +67,7 @@ RevLearn_
  - RevLearn_RLbeta_alt4_c_w_v23_1lr: based on v6, adding two temperatures for categorical_logit() and for bernoulli_logit()
 
  - RevLearn_RLbeta_alt4_c_w_v24_1lr: based on v19, use (inv_logit *2 -1) for normalizing otherValue, not otherCR
- - RevLearn_RLbeta_alt4_c_w_v25_1lr: --> v24, + 1)different valdiff betas, 2)accuracy as weight, 3)valdiff=diff(valfun), 4) diff(w/a) 2 betas, 5) [-1 1] for cr
+ - RevLearn_RLbeta_alt4_c_w_v25_1lr: --> v24, + 1)different valdiff betas, 2)accuracy as weight, 3)valdiff=diff(valfun), 4) diff(w/a) 2 betas, 5) [-1 1] for otherV
  - RevLearn_RLbeta_alt4_c_w_v26_1lr: --> v24, + 1)valdiff=diff(valfun), 2) diff(w/a) 2 betas, 
  - RevLearn_RLbeta_alt4_c_w_v27_1lr: --> v24, + 1)valdiff=diff(valfun), 2) diff(w/a) 2 betas, 3) [-1 1] for cr
  - RevLearn_RLbeta_alt4_c_w_v28_1lr: based on v24, + 1)valdiff=diff(valfun), 2)only uses nAgainst
@@ -79,14 +79,38 @@ RevLearn_
  - RevLearn_RLbeta_alt4_c_w_v33_1lr: based on v32, without beta[3,s] * valfun2[:]
  - RevLearn_RLbeta_alt4_c_w_v34_1lr: based on v31, leave out the general bias
  - RevLearn_RLbeta_alt4_c_w_v35_1lr: based on v31, valdiff = bet1 * ( valfun1(c1) - valfun1(~c1) )
- - RevLearn_RLbeta_alt4_c_w_v36_1lr: based on v31, otherReward2, use [-1 1] for the current trial, use [0 1] for the past trial
+ - RevLearn_RLbeta_alt4_c_w_v36_1lr: based on v35, otherReward2, use [-1 1] for the current trial, use [0 1] for the past trials
  - RevLearn_RLbeta_alt4_c_w_v37_1lr: based on v36, 4) diff(w/a) 2 betas
  - RevLearn_RLbeta_alt4_c_w_v38_1lr: based on v37, valdiff = bet1 * valdiff
 
- 
+ - RevLearn_RLbeta_alt4_c_w_v39_1lr: based on v6, weighted likelihood function, use nStay/nSwitch as a penalty term 
+ - RevLearn_RLbeta_alt4_c_w_v40_1lr: based on v6, weighted likelihood function, use nStay/nTrial as a penalty term 
+
+
  - RLbeta_alt5: (preference) weighted sum of cumulative otherRewards to represent otherValue, bind beta5 and beta6 together
  - RevLearn_RLbeta_alt5_c_w_v1_1lr: no 'general bias', run: vfun2 <- beta3*vDiff + beta4*(wgtWigh - wgtAgst)
  - RevLearn_RLbeta_alt5_c_w_v3_1lr: with 'general bias', run: vfun2 <- beta3 + beta4*vDiff + beta5*(wgtWigh - wgtAgst)
+
+ - RLbeta_alt6: temperature, regression-like model (e.g.  beta[s] ~ N( b0 + b1 * age +  b2 * VDiff, sigma) )
+ - RevLearn_RLbeta_alt1_c_w_v1_1lr: based on alt4_c_w_v6_1lr
+ - RevLearn_RLbeta_alt1_c_w_v2_1lr: based on v1, but with: bernoulli_logit( tau[s] * (valfun2[3-choice1[s,t]] - valfun2[choice1[s,t]] + beta[3,s]) );
+ 
+
+
+ - RevLearn_RLbeta_alt7_c_w_v1_1lr: based on alt4_v37, make a final version, use as the main model
+   x: value_diff = valfun1(c1) - valfun1(3-c1)
+   x: 6 betas
+   x: control otherValue's range between -1 and 1
+   x: reward history <- rbind( oth_reward[t-2:t-1](i.e. 0 or 1) , actual_oth_reward[t](i.e. -1 or 1) )
+
+ - RevLearn_RLbeta_alt7_c_w_v2_1lr: based on V1, adding a 'cfa' parameter
+ - RevLearn_RLbeta_alt7_c_w_v3_1lr: based on V1, use a beta0, as in valfun1 <- beta0[s] * myV + (2-beta0[s])*otherV
+ - RevLearn_RLbeta_alt7_c_w_v4_1lr: based on V1, without beta*wgtWith, to see whether the effect of against increases
+ - RevLearn_RLbeta_alt7_c_w_v5_1lr: based on V1, fit general bias(beta3) individually, not hierarchically
+ 
+
+
+
 
 
  
@@ -95,6 +119,7 @@ RevLearn_
  
  - _w: weighted coherence, i.e. weight .* with, weight .* against
  - _n: normalised other Value, i.e. othV(c2) / (othV(c2), othV(~c2))
+
  
  
  

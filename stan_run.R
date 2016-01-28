@@ -19,7 +19,7 @@ run_model <- function(modelStr, test = TRUE, fitObj = NA, adapt = 0.8) {
     nThin    <- 1
   } else {
     options(mc.cores = 4)
-    nSamples <- 4000#2000
+    nSamples <- 2000#2000
     nChains  <- 4 
     nBurnin  <- floor(nSamples/2)
     nThin    <- 1#1
@@ -75,9 +75,18 @@ prep_data <- function(modelstr){
   choice1 <- t(mydata[,3,])   # 1 OR  2
   choice2 <- t(mydata[,10,])  # 1 OR  2
   reward  <- t(mydata[,14,])  # 1 OR -1
+  
+  stayBYswitch <- array(0,dim = c(ns)) # nStay/nSwitch, per subject
+  stayBYtrial  <- array(0,dim = c(ns)) # nStay/nTrial, per subject
+  stayBYswitch <- mydata[100,145,]
+  stayBYswitch[stayBYswitch==Inf] <- 99
+  stayBYtrial  <- mydata[100,146,]
+  
   dataList$choice1 <- choice1
   dataList$choice2 <- choice2
   dataList$reward  <- reward
+  dataList$stayBYswitch <- stayBYswitch
+  dataList$stayBYtrial  <- stayBYtrial
   
   if ( substr(modelstr,1,14) == "RevLearn_RLcoh" ) {
     
@@ -101,9 +110,7 @@ prep_data <- function(modelstr){
     dataList$bet1    <- bet1;    dataList$bet2    <- bet2
     dataList$with    <- with;    dataList$against <- against
     
-  } else if ( substr(modelstr,1,20) == 'RevLearn_RLbeta_alt1' || substr(modelstr,1,20) == 'RevLearn_RLbeta_alt2' || 
-              substr(modelstr,1,20) == 'RevLearn_RLbeta_alt3' || substr(modelstr,1,20) == 'RevLearn_RLbeta_alt4' ||
-              substr(modelstr,1,20) == 'RevLearn_RLbeta_alt5') { 
+  } else if ( substr(modelstr,1,15) == 'RevLearn_RLbeta' ) { 
     
     chswtch <- array(0,dim = c(ns,nt))
     bet1    <- array(0,dim = c(ns,nt)); bet2    <- array(0,dim = c(ns,nt))
@@ -186,7 +193,8 @@ prep_data <- function(modelstr){
       L <- cal_prob_v2(dataList)
       dataList$wProb_sC2 <- L$wProb_sC2
       dataList$wProb_oC2 <- L$wProb_oC2
-    } else if ( substr(modelstr,1,20) == 'RevLearn_RLbeta_alt4' || substr(modelstr,1,20) == 'RevLearn_RLbeta_alt5' ) {
+    } else if ( substr(modelstr,1,20) == 'RevLearn_RLbeta_alt4' || substr(modelstr,1,20) == 'RevLearn_RLbeta_alt5' ||
+                substr(modelstr,1,20) == 'RevLearn_RLbeta_alt6' || substr(modelstr,1,20) == 'RevLearn_RLbeta_alt7' ) {
       otherReward2 <- array(0,dim = c(ns,nt,4))
       otherReward2_actural <- array(0,dim = c(ns,nt,4))
       otherWith2   <- array(0,dim = c(ns,nt,4))
@@ -367,6 +375,36 @@ create_pois <- function(model){
               "lr_sd", "beta_sd", "disc_sd",
               "lr", "beta", "disc",
               "c_rep",
+              "log_likc1", "log_likc2", "lp__")
+  } else if (substr(model,1,20) == 'RevLearn_RLbeta_alt6') {
+    pois <- c("lr_mu", "beta_mu", "disc_mu", "tau_mu",
+              "lr_sd", "beta_sd", "disc_sd", "tau_sd",
+              "lr", "beta", "disc", "tau",
+              "c_rep",
+              "log_likc1", "log_likc2", "lp__")
+  } else if ( model == 'RevLearn_RLbeta_alt7_c_w_v2_1lr' ) {
+    pois <- c("lr_mu", "beta_mu", "disc_mu", "cfa_mu",
+              "lr_sd", "beta_sd", "disc_sd", "cfa_sd",
+              "lr", "beta", "disc", "cfa",
+              "c1_rep", "c2_rep",
+              "log_likc1", "log_likc2", "lp__")
+  } else if ( model == 'RevLearn_RLbeta_alt7_c_w_v3_1lr' ) {
+    pois <- c("lr_mu", "beta_mu", "disc_mu", "beta0_mu",
+              "lr_sd", "beta_sd", "disc_sd", "beta0_sd",
+              "lr", "beta", "disc", "beta0",
+              "c1_rep", "c2_rep",
+              "log_likc1", "log_likc2", "lp__")
+  } else if ( model == 'RevLearn_RLbeta_alt7_c_w_v5_1lr' ) {
+    pois <- c("lr_mu", "beta_mu", "disc_mu", "bias_mean",
+              "lr_sd", "beta_sd", "disc_sd", "bias_sd",
+              "lr", "beta", "disc", "beta0", "bias",
+              "c1_rep", "c2_rep",
+              "log_likc1", "log_likc2", "lp__")
+  } else if ( substr(model,1,20) == 'RevLearn_RLbeta_alt7' ) {
+    pois <- c("lr_mu", "beta_mu", "disc_mu",
+              "lr_sd", "beta_sd", "disc_sd",
+              "lr", "beta", "disc",
+              "c1_rep", "c2_rep",
               "log_likc1", "log_likc2", "lp__")
   }
   
